@@ -1,19 +1,30 @@
-//@ts-nocheck
-
 import Head from 'next/head'
 import Layout from "../components/Layout";
 import ListviewTable from "../components/ListviewTable";
 import { useSession } from 'next-auth/react';
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+
+interface Entry {
+    _id: string;
+    time: number;
+    date: any;
+    weekday: number;
+    description: string;
+    user: string;
+    study: boolean;
+    code: boolean;
+    work: boolean;
+    uni: boolean;
+}
+
 
 export default function Listview() {
 
-    const router = useRouter();
     const { data: session, status } = useSession();
-    const [activityList, setActivityList] = useState();
+    const [activityList, setActivityList] = useState<Entry[]>();
     const [sendRequest, setSendRequest] = useState(false);
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         async function fetchList() {
             const response = await fetch('/api/getentrylist', {
@@ -29,13 +40,12 @@ export default function Listview() {
             } else {
                 setActivityList(data.list);
             }
-            
         }
         if (session && !sendRequest){
             setSendRequest(true);
             fetchList();
         }
-    }, [router])
+    });
 
     return (
         <>
@@ -47,13 +57,11 @@ export default function Listview() {
             </Head>
             <Layout>
                 <main className='p-2 sm:p-8 h-full w-full'>
-                <div className="w-full sm:p-2 shadow rounded-lg bg-white">
-                    <ListviewTable activityList={activityList} />
-                </div>
+                    <div className="w-full sm:p-2 shadow rounded-lg bg-white">
+                        <ListviewTable activityList={activityList} />
+                    </div>
                 </main>
             </Layout>
         </>
-       
-
     )
 }

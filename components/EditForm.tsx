@@ -1,13 +1,26 @@
-//@ts-nocheck
 import { useRouter } from 'next/router';
-import { useState, useRef } from "react"
+import { useState } from "react";
+import type { FC } from 'react';
 
-export default function EditForm ({ entry }) {
+interface Entry {
+    _id: string;
+    time: number;
+    date: any;
+    weekday: number;
+    description: string;
+    user: string;
+    study: boolean;
+    code: boolean;
+    work: boolean;
+    uni: boolean;
+}
+
+
+const EditForm:FC<{entry:Entry}> = ({ entry }) => {
 
     const router = useRouter();
     const [addFailed, setAddFailed] = useState(false);
     const [failedMessage, setFailedMessage] = useState("");
-
 
     const [time, setTime] = useState(entry.time);
     const [description, setDescription] = useState(entry.description);
@@ -17,7 +30,7 @@ export default function EditForm ({ entry }) {
     const [uni, setUni] = useState(entry.uni);
 
 
-    async function hanldeSubmit(e) {
+    async function hanldeSubmit(e:any) {
         e.preventDefault();
         if (time) {
             let response = await fetch(`/api/editentry/${entry._id}`, {
@@ -41,19 +54,18 @@ export default function EditForm ({ entry }) {
     let arr = entry.date.slice(0, 10).split("-");
     let display_date = parseInt(arr[2]) + " / " + parseInt(arr[1]) + " / " + parseInt(arr[0])
 
-    function handleTimeChange(e) {
+    function handleTimeChange(e:any) {
         setTime(e.target.value);
     }
     handleDescChange
-    function handleDescChange(e) {
+    function handleDescChange(e:any) {
         setDescription(e.target.value);
     }
     return(
-    <>
         <div className="bg-white shadow rounded-lg p-4 sm:p-6  xl:p-8  2xl:col-span-2 h-full ">
      
             <div className="mx-auto w-full max-w-lg">
-                <h1 className="sm:text-4xl text-3xl font-medium">Add today&apos;s entry</h1>
+                <h1 className="sm:text-4xl text-3xl font-medium">Edit your entry</h1>
                 {addFailed ? <p className="pb-6 text-red-600">{failedMessage}</p> : <p className='text-gray-700 text-lg'>{display_date}</p>}
                 <form onSubmit={hanldeSubmit}>
                     <div className="pt-6">
@@ -79,7 +91,7 @@ export default function EditForm ({ entry }) {
                             {uni && <p className='text-gray-700 text-sm'>&nbsp;Uni</p>}
                         </div>
                         <div className="relative z-0 mb-6">
-                            <input value={time} type="number" onChange={handleTimeChange} name="time" className="peer block w-full appearance-none border-0 border-b border-gray-500 bg-transparent py-2.5 px-0 text-sm text-gray-900 focus:border-blue-600 focus:outline-none focus:ring-0" placeholder=" " />
+                            <input value={time} type="number" step="0.01" onChange={handleTimeChange} name="time" className="peer block w-full appearance-none border-0 border-b border-gray-500 bg-transparent py-2.5 px-0 text-sm text-gray-900 focus:border-blue-600 focus:outline-none focus:ring-0" placeholder=" " />
                             <label className="absolute top-3 -z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-gray-500 duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:left-0 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-blue-600 peer-focus:dark:text-blue-500">Time in hours</label>
                         </div>
 
@@ -96,7 +108,8 @@ export default function EditForm ({ entry }) {
                 </form>
             </div>
         </div>        
-    </>
     )
 }
+
+export default EditForm
 

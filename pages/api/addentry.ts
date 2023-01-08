@@ -1,6 +1,5 @@
 //@ts-nocheck
 
-
 import { connectToMongo } from "../../helperFunctions/mongodb";
 import User from "../../models/UserModel";
 import type { NextApiRequest, NextApiResponse } from 'next';
@@ -17,17 +16,6 @@ interface SignupRequest extends NextApiRequest {
         work: boolean;
         uni: boolean;
     };
-}
-
-class extendedDate extends Date {
-    getWeekNumber(){
-        let d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
-        let dayNum = d.getUTCDay() || 7;
-        d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-        let yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-        return Math.ceil((((+d - +yearStart) / 86400000) + 1)/7);
-    }
-
 }
 
 async function handler(req: SignupRequest, res: NextApiResponse) {
@@ -49,10 +37,11 @@ async function handler(req: SignupRequest, res: NextApiResponse) {
 
         await connectToMongo();
 
-        const today = new extendedDate();
+        const today = new Date();
+        const weekday = today.getDay();
         const _id = session.user._id;
         let user = await User.findOne({ _id });
-        let alreadyExists = await Activity.findOne({ date: today.toJSON().slice(0, 10)});
+        let alreadyExists = await Activity.findOne({ user: _id, date: today.toJSON().slice(0, 10)});
 
         if (!user) {
             console.log("User not found");
@@ -65,7 +54,7 @@ async function handler(req: SignupRequest, res: NextApiResponse) {
             let activity = new Activity({
                 user: _id,
                 date: today.toJSON().slice(0, 10),
-                weekday: today.getWeekNumber(),
+                weekday: weekday,
                 study: study,
                 code: code, 
                 work: work,

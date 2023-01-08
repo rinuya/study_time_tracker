@@ -1,26 +1,29 @@
-//@ts-nocheck
 import { useRouter } from 'next/router';
 import { useState, useRef } from "react"
+import type { FC } from 'react';
 
-export default function ActivityForm (props) {
+
+const ActivityForm:FC = ({}) => {
 
     const router = useRouter();
-    const [addFailed, setAddFailed] = useState(false);
-    const [failedMessage, setFailedMessage] = useState("");
+    const [addFailed, setAddFailed] = useState<boolean>(false);
+    const [failedMessage, setFailedMessage] = useState<string>("");
   
-    const [study, setStudy] = useState(false);
-    const [code, setCode] = useState(false);
-    const [work, setWork] = useState(false);
-    const [uni, setUni] = useState(false);
-    const timeRef = useRef();
-    const descriptionRef = useRef();
+    const [study, setStudy] = useState<boolean>(false);
+    const [code, setCode] = useState<boolean>(false);
+    const [work, setWork] = useState<boolean>(false);
+    const [uni, setUni] = useState<boolean>(false);
+    const timeRef = useRef<HTMLInputElement>(null);
+    const descriptionRef = useRef<HTMLTextAreaElement>(null);
 
-    async function hanldeSubmit(e) {
+    async function hanldeSubmit(e:any) {
         e.preventDefault();
-        if (timeRef?.current!.value) {
+        const time = timeRef.current ? timeRef.current.value : "";
+        const description = descriptionRef.current ? descriptionRef.current.value : "";
+        if (time) {
             let response = await fetch('/api/addentry', {
                 method: 'POST',
-                body: JSON.stringify({ time: timeRef.current.value, study: study, code: code, work: work, uni: uni, description: descriptionRef.current.value}),
+                body: JSON.stringify({ time: time, study: study, code: code, work: work, uni: uni, description: description}),
                 headers: {
                   'Content-Type': 'application/json',
                 },
@@ -39,7 +42,6 @@ export default function ActivityForm (props) {
     const today = new Date();
 
     return(
-    <>
         <div className="bg-white shadow rounded-lg p-4 sm:p-6  xl:p-8  2xl:col-span-2 h-full ">
      
             <div className="mx-auto w-full max-w-lg">
@@ -69,7 +71,7 @@ export default function ActivityForm (props) {
                             {uni && <p className='text-gray-700 text-sm'>&nbsp;Uni</p>}
                         </div>
                         <div className="relative z-0 mb-6">
-                            <input ref={timeRef} type="number" name="name" className="peer block w-full appearance-none border-0 border-b border-gray-500 bg-transparent py-2.5 px-0 text-sm text-gray-900 focus:border-blue-600 focus:outline-none focus:ring-0" placeholder=" " />
+                            <input ref={timeRef} type="number" step="0.01" name="time" className="peer block w-full appearance-none border-0 border-b border-gray-500 bg-transparent py-2.5 px-0 text-sm text-gray-900 focus:border-blue-600 focus:outline-none focus:ring-0" placeholder=" " />
                             <label className="absolute top-3 -z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-gray-500 duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:left-0 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-blue-600 peer-focus:dark:text-blue-500">Time in hours</label>
                         </div>
 
@@ -85,7 +87,7 @@ export default function ActivityForm (props) {
                 </form>
             </div>
         </div>        
-    </>
     )
 }
 
+export default ActivityForm

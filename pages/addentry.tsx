@@ -1,5 +1,3 @@
-//@ts-nocheck
-
 import Head from 'next/head'
 import Layout from "../components/Layout";
 import ActivityForm from "../components/ActivityForm";

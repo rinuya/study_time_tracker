@@ -1,8 +1,6 @@
 //@ts-nocheck
 
-
 import { connectToMongo } from "../../../helperFunctions/mongodb";
-import User from "../../../models/UserModel";
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { unstable_getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
@@ -11,6 +9,7 @@ import Activity from "../../../models/ActivityModel";
 interface SignupRequest extends NextApiRequest {
     body: {
         date: any;
+        weekday: number;
         time: number;
         description: string;
         study: boolean;
@@ -40,7 +39,7 @@ async function handler(req: SignupRequest, res: NextApiResponse) {
 
         await connectToMongo();
 
-        const _id = session.user._id;
+        const _id = session.user!._id!;
         let entry = await Activity.findOne({ _id: id, user:_id });
 
         if (!entry) {

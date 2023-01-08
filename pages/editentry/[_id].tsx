@@ -1,5 +1,3 @@
-//@ts-nocheck
-
 import Head from 'next/head'
 import Layout from "../../components/Layout";
 import EditForm from "../../components/EditForm";
@@ -13,7 +11,6 @@ export default function AddEntry() {
     const { data: session, status } = useSession();
     const { _id } = router.query
     const [entry, setEntry] = useState(null);
-    const [sendRequest, setSendRequest] = useState(false);
 
     useEffect(() => {
         async function fetchList() {
@@ -33,23 +30,20 @@ export default function AddEntry() {
             
         }
         if (session && router.isReady){
-            setSendRequest(true);
             fetchList();
         }
-    }, [_id, router])
+    }, [_id, router, session])
 
     return (
         <>
             <Head>
-                <title>Add Entry</title>
+                <title>Edit Entry</title>
                 <meta name="description" content="Add an entry to cs_tracker" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <Layout>
-                
                 {entry && <EditForm entry={entry} />}
-                
             </Layout>
         </>
        
